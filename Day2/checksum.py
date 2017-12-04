@@ -17,8 +17,11 @@ def solvePartOne(inputArray):
     return totalSum
 
 def solvePartTwo(inputArray):
-    pass
-
+    totalSum = 0
+    for row in inputArray:
+        div = [(a/b) for a in row for b in row if a%b == 0 and a != b]
+        totalSum+= int(div[0])
+    return totalSum
 
 
 def main():
