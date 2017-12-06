@@ -1,3 +1,5 @@
+import collections
+
 
 def redistribute(states):
     maxval, maxi = getMaxAndIndex(states)
@@ -34,9 +36,9 @@ def getInputState(filename):
         inputList = list(map(int,inputList))
     return inputList
 
-def solvePartOne(bankStates):
-    seenConfigs = set()
-    seenConfigs.add(tuple(bankStates))
+def findRepeated(bankStates):
+    seenConfigs = collections.OrderedDict()
+    seenConfigs[tuple(bankStates)] = 1
     # print(bankStates)
 
     cycleCount = 0
@@ -46,13 +48,22 @@ def solvePartOne(bankStates):
         # print(bankStates)
         cycleCount += 1
         if tuple(bankStates) not in seenConfigs:
-            seenConfigs.add(tuple(bankStates))
+            seenConfigs[tuple(bankStates)] = 1
         else:
+            seenConfigs[tuple(bankStates)] += 1
             foundRepeated = True
+    return cycleCount, seenConfigs
+
+def solvePartOne(bankStates):
+    cycleCount, seenConfigs = findRepeated(bankStates)
     return cycleCount
 
 def solvePartTwo(bankStates):
-    pass
+    cycleCount, seenConfigs = findRepeated(bankStates)
+
+    repeatedState = max(seenConfigs, key=seenConfigs.get)
+    start = [i for i,x in enumerate(seenConfigs) if x == repeatedState]
+    return (len(seenConfigs)-start[0])
 
 def main():
     bankStates = getInputState('input.txt')
