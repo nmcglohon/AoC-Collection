@@ -25,7 +25,18 @@ def solvePartOne(inputInstructions):
 
 
 def solvePartTwo(inputInstructions):
-    pass
+    stepCount = 0
+    curIndex = 0
+    while curIndex < len(inputInstructions):
+        thisJump = inputInstructions[curIndex]
+        if(thisJump >= 3):
+            inputInstructions[curIndex] -= 1
+        else:
+            inputInstructions[curIndex] += 1
+        curIndex = curIndex + thisJump
+        stepCount += 1
+
+    return stepCount
 
 def main():
     instructions = getInputLines('input.txt')
