@@ -74,17 +74,11 @@ def solvePartOne(inputVal):
 
     return dist
 
-
-def solvePartTwo(inputVal):
-    pass
-
-
 def main():
     inputVal = 312051
     if len(sys.argv) > 1:
         inputVal = int(sys.argv[1])
     print("Part 1: " + str(solvePartOne(inputVal)))
-    print("Part 2: " + str(solvePartTwo(inputVal)))
 
 
 if __name__ == '__main__':
