@@ -4,6 +4,8 @@ from collections import OrderedDict
 class Tree:
     def __init__(self,NodeDict=OrderedDict()):
         self.NodeDict = NodeDict
+        self.root = None
+        self.totalLevels = 0
 
     def __contains__(self, item):
         return item in self.NodeDict.keys()
@@ -32,6 +34,55 @@ class Tree:
 
     def get(self,key):
         return self.NodeDict[key]
+
+    def calculateRoot(self):
+        maxNodeLevels = 0
+        maxNode = None
+        for node in self:
+            levels = node.getLevelsBelow()
+            if levels > maxNodeLevels:
+                maxNodeLevels = levels
+                maxNode = node
+        self.root = maxNode
+        self.totalLevels = maxNodeLevels
+
+    def getRoot(self):
+        return self.root
+
+    def getRootLevels(self):
+        return self.totalLevels
+
+    def getCorrectedWeight(self,eroot):
+        if len(eroot.children) > 0:
+            childWeights = []
+            for child in eroot.children:
+                childWeights.append(child.getTotalWeight())
+
+            modeWeight = max(set(childWeights), key=childWeights.count)
+            incorrectChildIndex = -1
+            for i,weight in enumerate(childWeights):
+                if weight is not modeWeight:
+                    #this is the incorrect weight!
+                    incorrectChildIndex = i
+                    break
+
+            if incorrectChildIndex is -1:
+                #all children are balanced, eroot is the problem program
+                return -1
+
+            ret = self.getCorrectedWeight(eroot.children[incorrectChildIndex])
+            if ret is 0: #child was leaf
+                return modeWeight
+            elif ret is -1:
+                #incorrect child index is the problem child, its weight needs to be changed so that its total weight is equal to mode weight
+                incorrectChildTotalWeight = eroot.children[incorrectChildIndex].getTotalWeight()
+                changeToChildWeight = modeWeight - incorrectChildTotalWeight
+                return eroot.children[incorrectChildIndex].weight + changeToChildWeight
+            else:
+                return ret
+
+        else:
+            return 0
 
 class Node:
     def __init__(self, name, weight=-1, children=[]):
@@ -65,6 +116,14 @@ class Node:
             return maxFoundBelow+1
         else: #am leaf
             return 0
+
+    def getTotalWeight(self):
+        sumBelow = 0
+        if len(self.children) > 0:
+            for child in self.children:
+                sumBelow += child.getTotalWeight()
+        return self.weight + sumBelow
+
 
 def parseLine(lineString, progTree):
     lineString = lineString.strip()
@@ -102,18 +161,13 @@ def parseInput(inFilename):
 
 
 def solvePartOne(progTree):
-    maxNodeLevels = 0
-    maxNode = None
-    for node in progTree:
-        levels = node.getLevelsBelow()
-        if levels > maxNodeLevels:
-            maxNodeLevels = levels
-            maxNode = node
-
-    return "Max Node: %s with %s levels"%(str(maxNode.getName()),maxNodeLevels)
+    progTree.calculateRoot()
+    return "%s with %s levels"%(progTree.getRoot().name,progTree.getRootLevels())
 
 def solvePartTwo(progTree):
-    pass
+    progTree.calculateRoot()
+    return progTree.getCorrectedWeight(progTree.getRoot())
+
 
 def main():
     progTree = parseInput('input.txt')
