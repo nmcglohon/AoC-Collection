@@ -8,6 +8,12 @@ class Tree:
     def __contains__(self, item):
         return item in self.NodeDict.keys()
 
+    def __iter__(self):
+        return self.NodeDict.values().__iter__()
+
+    def __next__(self):
+        return self.NodeDict.values().__next__()
+
     def __str__(self):
         myStr = ""
         for node in self.NodeDict:
@@ -16,11 +22,11 @@ class Tree:
 
     def add(self,node):
         if node.name not in self.NodeDict:
-            print("Adding %s"%(str(node)))
+            # print("Adding %s"%(str(node)))
             self.NodeDict[node.name] = node
 
         if self.NodeDict[node.name].weight is -1 and node.weight is not -1:
-            print("Updating %s"%(str(node)))
+            # print("Updating %s"%(str(node)))
             self.NodeDict[node.name].weight = node.weight
             self.NodeDict[node.name].children = node.children
 
@@ -48,6 +54,17 @@ class Node:
 
     def getName(self):
         return self.name
+
+    def getLevelsBelow(self):
+        if len(self.children) > 0: #am parent
+            maxFoundBelow = 0
+            for child in self.children:
+                childLevels = child.getLevelsBelow()
+                if childLevels > maxFoundBelow:
+                    maxFoundBelow = childLevels
+            return maxFoundBelow+1
+        else: #am leaf
+            return 0
 
 def parseLine(lineString, progTree):
     lineString = lineString.strip()
@@ -83,8 +100,17 @@ def parseInput(inFilename):
 
     return progTree
 
+
 def solvePartOne(progTree):
-    pass
+    maxNodeLevels = 0
+    maxNode = None
+    for node in progTree:
+        levels = node.getLevelsBelow()
+        if levels > maxNodeLevels:
+            maxNodeLevels = levels
+            maxNode = node
+
+    return "Max Node: %s with %s levels"%(str(maxNode.getName()),maxNodeLevels)
 
 def solvePartTwo(progTree):
     pass
