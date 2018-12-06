@@ -1,6 +1,5 @@
-from copy import copy
-
-the_stack = []
+import string
+import sys
 
 def read_input(filename):
     with open(filename,'r') as f:
@@ -20,7 +19,8 @@ def do_annihilate(u1, u2):
         return False
 
 def process_polymer_chain_stack(A):
-    input_array = copy(A)
+    the_stack = []
+    input_array = A
     while len(input_array) > 0:
         new_unit = input_array.pop(0)
         sl = len(the_stack)
@@ -32,12 +32,37 @@ def process_polymer_chain_stack(A):
 
     return the_stack
 
+def remove_all(L,item):
+    return [x for x in L if (x.lower() != item.lower())]
+
 def main():
-    A = read_input("day5-input.txt")
+    A = read_input("day5-test.txt")
+    print("Part 1 ---------")
     print("The length of the chain before processing: %d"%len(A))
     A = process_polymer_chain_stack(A)
-
     print("The length of the chain after processing: %d"%len(A))
+
+    print("Part 2 ---------")
+    A = read_input("day5-input.txt")
+
+    unit_types = string.ascii_uppercase
+    print("Checking: ",end='')
+
+    best_type = ''
+    best_score = 99999999999
+    for ut in unit_types:
+        print(ut,end='')
+        sys.stdout.flush()
+        a = A
+        a = remove_all(a,ut)
+        a = process_polymer_chain_stack(a)
+        if len(a) < best_score:
+            best_type = ut
+            best_score = len(a)
+    print()
+
+    print("By removing type %s and then processing, we got a best chain of length %d"%(best_type,best_score))
+
 
 
 if __name__ == "__main__":
