@@ -32,6 +32,9 @@ def read_input(filename):
 def main():
     centers = read_input('day6-input.txt')
 
+    print("Part 1 ---------")
+
+
     maxx = 0
     maxy = 0
     for c in centers:
@@ -95,6 +98,28 @@ def main():
 
     print("The largest non-infinite region is %d with %d claimed squares"%(largest_area_id,largest_area))
 
+
+    print("Part 2 ---------")
+    max_total_distance = 10000
+    # max_total_distance = 32 #test
+
+    total_distance_mapper = dict()
+
+    for ix in range(region_matrix.shape[1]):
+        for iy in range(region_matrix.shape[0]):
+            if (ix,iy) not in total_distance_mapper:
+                total_distance_mapper[(ix,iy)] = 0
+
+            for c in centers:
+                dist = c.distance_to(ix,iy)
+                total_distance_mapper[(ix,iy)] += dist
+
+    num_squares_close = 0
+    for p in total_distance_mapper:
+        if total_distance_mapper[p] < max_total_distance:
+            num_squares_close += 1
+
+    print("The region containing spaces that are within %d total distance to all centers has area of %d"%(max_total_distance,num_squares_close))
 
 
 
