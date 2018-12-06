@@ -117,7 +117,9 @@ def process_all_total_sleep(gsm):
             
     return guard_total_sleep_map
 
-def do_strategy_one(guard_sleep_mapper, guard_total_sleep_map):
+def do_strategy_one(gsm):
+    guard_total_sleep_map = process_all_total_sleep(gsm)
+
     max_sleep_gid = -1
     max_sleep_minutes = 0
     for gid in guard_total_sleep_map:
@@ -130,14 +132,44 @@ def do_strategy_one(guard_sleep_mapper, guard_total_sleep_map):
     print("Guard %d slept the most with %d minutes"%(max_sleep_gid,max_sleep_minutes))
 
     sleepiest_guard_array = []
-    for e in sorted(guard_sleep_mapper[max_sleep_gid]):
-        sleepiest_guard_array.append(guard_sleep_mapper[max_sleep_gid][e])
+    for e in sorted(gsm[max_sleep_gid]):
+        sleepiest_guard_array.append(gsm[max_sleep_gid][e])
 
     sleep_matrix = np.matrix(sleepiest_guard_array)
     most_slept_minute = sleep_matrix.sum(axis=0).argmax()
 
     print("He slept most during the %d minute"%most_slept_minute)
     print("Strategy 1 returns: %d x %d = %d"%(max_sleep_gid,most_slept_minute,max_sleep_gid * most_slept_minute))
+
+def do_strategy_two(gsm):
+    guard_sleep_matrix_mapper = dict()
+
+    for gid in gsm:
+        sleep_array = []
+        for e in sorted(gsm[gid]):
+            sleep_array.append(gsm[gid][e])
+        sleep_matrix = np.matrix(sleep_array)
+
+        guard_sleep_matrix_mapper[gid] = sleep_matrix
+
+    consistent_guard_gid = -1
+    max_mode = -1
+    max_moded_minute = -1
+
+    for gid in guard_sleep_matrix_mapper:
+        sm = guard_sleep_matrix_mapper[gid]
+        guards_most_slept_minute = sm.sum(axis=0).argmax()
+        min_sums = sm.sum(axis=0).tolist()[0]
+        mode = min_sums[guards_most_slept_minute]
+        # print("Guard %d was asleep %d times in min %d"%(gid, mode, guards_most_slept_minute))
+        if mode > max_mode:
+            max_mode = mode
+            max_moded_minute = guards_most_slept_minute
+            consistent_guard_gid = gid
+
+    print("The most consistently sleepy guard is %d with %d times on minute %d"%(consistent_guard_gid,max_mode,max_moded_minute))
+    print("Strategy 2 returns: %d x %d = %d"%(consistent_guard_gid, max_moded_minute, consistent_guard_gid*max_moded_minute))
+    
 
 def main():
     read_input("day4-input.txt")
@@ -150,9 +182,9 @@ def main():
 
     guard_sleep_mapper = dict()
     process_event_sleeps(sorted_event_list,guard_sleep_mapper)
-    guard_total_sleep_map = process_all_total_sleep(guard_sleep_mapper)
 
-    do_strategy_one(guard_sleep_mapper,guard_total_sleep_map)
+    do_strategy_one(guard_sleep_mapper)
+    do_strategy_two(guard_sleep_mapper)
 
 if __name__ == "__main__":
     main()
