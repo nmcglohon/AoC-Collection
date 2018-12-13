@@ -3,6 +3,8 @@ import numpy as np
 np.set_printoptions(linewidth=500)
 A = np.zeros((26,26),dtype=int)
 
+all_task_nums = set()
+
 def let_to_num(let):
     return ord(let) - 65
 
@@ -20,11 +22,13 @@ def read_input(filename):
             proc = let_to_num(proc_letter)
             dep_on = let_to_num(dep_on_letter)
 
+            all_task_nums.add(proc)
+
             A[dep_on][proc] = 1            
 
 
 def part1():
-    no_dep_lets = [i for i,x in enumerate(A.sum(axis=1)) if x == 0]
+    no_dep_lets = [i for i,x in enumerate(A.sum(axis=1)) if x == 0 and i in all_task_nums]
 
     L = []
     S = []
@@ -45,7 +49,6 @@ def part1():
     L = list(map(num_to_let,L))
     
     return ''.join(L)
-
 
 
 def main():
