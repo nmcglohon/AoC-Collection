@@ -47,16 +47,16 @@ class Circle:
         new_marble_id = self.max_marble_val+1
         self.max_marble_val = new_marble_id
         new_marble = Marble(new_marble_id)
-        print("Adding new marble %d"%new_marble_id)
+        # print("Adding new marble %d"%new_marble_id)
 
         if is_multiple_of_twenty_three(new_marble_id):
-            print("JK: Multiple of 23!")
+            # print("JK: Multiple of 23!")
             ret_marbles = [new_marble]
             ret_marbles.append(self.remove_marble(-7))
 
             self.cur_marble = ret_marbles[-1].prev.next
 
-            print("Current Marble: %d"%self.cur_marble.mid)
+            # print("Current Marble: %d"%self.cur_marble.mid)
 
             # print(list(map(str,ret_marbles)))
             return ret_marbles
@@ -135,11 +135,7 @@ def parse_input(filename):
         return (num_players,last_marble)
 
 
-def main():
-    filename = sys.argv[1]
-
-    (num_players, last_marble) = parse_input(filename)
-
+def part1(num_players,last_marble):
     circ = Circle()
 
     players = [Player(i) for i in range(num_players)]
@@ -161,7 +157,48 @@ def main():
             max_player_score = pscore
             max_player = p
 
-    print("Part 1: Max Player Score is %d"%max_player_score)
+    return max_player_score
+
+
+def part2(num_players,last_marble):
+    last_marble = last_marble * 100
+    
+    circ = Circle()
+
+    players = [Player(i) for i in range(num_players)]
+
+    player_up_index = 0
+    while circ.max_marble_val < last_marble:
+        player_up = players[player_up_index%len(players)]
+        player_up.play(circ)
+        player_up_index += 1
+
+        # print(circ.get_marbles_str_list(0))
+
+    max_player_score = 0
+    max_player = None
+
+    for p in players:
+        pscore = p.get_score()
+        if pscore > max_player_score:
+            max_player_score = pscore
+            max_player = p
+
+    return max_player_score
+
+def main():
+    filename = sys.argv[1]
+    (num_players, last_marble) = parse_input(filename)
+
+    p1_answer = part1(num_players,last_marble)
+    print("Part 1: Max Player Score is %d"%p1_answer)
+
+    p2_answer = part2(num_players,last_marble)
+    print("Part 2: Max Player Score is %d"%p2_answer)
+
+
+
+    
 
 if __name__ == "__main__":
     main()
