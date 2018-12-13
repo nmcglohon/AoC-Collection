@@ -33,6 +33,20 @@ class Node:
 
         return count
 
+    def get_self_value(self):
+        count = 0
+
+        if len(self.children) == 0:
+            for md in self.metadata:
+                count += md
+            return count
+        else:
+            for child_reference in self.metadata:
+                child_index = child_reference -1
+                if child_index < len(self.children):
+                    count += self.children[child_index].get_self_value()
+            return count
+
 
 
 def read_input(filename):
@@ -75,13 +89,17 @@ def parse_node(inputs, pos, parent):
 
 def sum_metadata(root_node):
     count = root_node.sum_self_and_children()
+    print("Part 1: The sum of all metadata is: %d"%count)
 
-    print("The sum of all metadata is: %d"%count)
+def get_true_value(root_node):
+    count = root_node.get_self_value()
+    print("Part 2: The sum of all true values is: %d"%count)
     
 
 def main():
     read_input('day8-input.txt')
     sum_metadata(root_node)
+    get_true_value(root_node)
 
 if __name__ == "__main__":
     main()
