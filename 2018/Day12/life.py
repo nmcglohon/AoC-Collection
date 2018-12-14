@@ -120,6 +120,9 @@ def parse_input(filename):
 
     return lr
 
+def all_same(items):
+    return all(x == items[0] for x in items)
+
 def part_one():
     lr = parse_input("day12-input.txt")
 
@@ -128,9 +131,34 @@ def part_one():
 
     return lr.get_score()
 
+def part_two():
+    lr = parse_input("day12-input.txt")
+
+    num_prev = lr.get_score()
+    time = 0
+    unstable = True
+    last_three_diffs = [0,0,0]
+    while unstable:
+        time+=1
+        lr.tick()
+        new_score = lr.get_score()
+        diff = new_score - num_prev
+        num_prev = new_score
+        last_three_diffs.pop(0)
+        last_three_diffs.append(diff)
+        if all_same(last_three_diffs):
+            unstable = False
+    
+    fast_forward_time = 50000000000 - time
+    num_prev += diff * fast_forward_time
+
+    return num_prev
+
 def main():
     p1a = part_one()
     print("Part 1: %d"%p1a)
+    p2a = part_two()
+    print("Part 2: %d"%p2a)
     
 if __name__ == "__main__":
     main()
